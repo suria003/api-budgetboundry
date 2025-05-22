@@ -67,6 +67,7 @@ def admin_permission_modify():
         }), 200
     except IntegrityError as e:
         db.session.rollback()
+        print("Unexpected Error:", e)
         return jsonify({
             'error':'Internal Server Error'
         }), 500
