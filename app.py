@@ -45,6 +45,32 @@ def Index():
 #             {'error': 'Internal Server Error'}
 #         ), 500
 
+@app.route('/api/admin_permission_modify', methods=['POST'])
+def admin_permission_modify():
+    data = request.get_json()
+    
+    token = data.get('token')
+    group = data.get('group')
+    
+    chk_user = User.query.filter_by(token=token).first()
+    if not chk_user:
+        return jsonify({
+            'warn' : f'toke : {token} not found.'
+        }), 404
+    
+    chk_user.group = group
+    
+    try:
+        db.session.commit()
+        return jsonify({
+            'message':f'User token : {token} is updated successfully.'
+        }), 200
+    except IntegrityError as e:
+        db.session.rollback()
+        return jsonify({
+            'error':'Internal Server Error'
+        }), 500
+
 @app.route('/api/create_user', methods=['POST'])
 def create_user():
     data = request.get_json()
@@ -94,11 +120,11 @@ def create_user():
             }), 201
     except IntegrityError as e:
         db.session.rollback()
-        print("IntegrityError:", e)
+        # print("IntegrityError:", e)
         return jsonify({'error': 'Internal Server Error.'}), 500
     except Exception as e:
         db.session.rollback()
-        print("Unexpected Error:", e)
+        # print("Unexpected Error:", e)
         return jsonify({'error': 'Unexpected Server Error.'}), 500
 
     
@@ -206,6 +232,7 @@ def get_session():
             'email' : session.email,
             'token' : session.token,
             'group' : session.group,
+            'address' : session.address,
         }
         for session in sessions
     ]
