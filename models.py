@@ -12,6 +12,7 @@ class User(db.Model):
     label_token = db.Column(db.String(10), unique=True, nullable=False) # User Bill Id
     group = db.Column(db.String(20), unique=False, nullable=False) # User permission Group
     user_verification = db.Column(db.Integer, unique=False, nullable=False) # 0 = not verified, 1 = verified
+    address = db.Column(db.String(10), unique=True, nullable=False) #IP ADDRESS CHECK TWO-FACTOR VERIFICATION'S
     
     __table_args__ = (
         CheckConstraint('user_verification IN (0, 1)', name='check_user_verification'),
@@ -63,7 +64,7 @@ class Opoc_mas(db.Model):
 class BillingData(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     head = db.Column(db.String(20), unique=True, nullable=False) #head
-    path = db.Column(db.String(2000), unique=False, nullable=False) #svg icon
+    path = db.Column(db.Text, unique=False, nullable=False) #svg icon
     head_id = db.Column(db.String(5), unique=True, nullable=False) #tag id
     status = db.Column(db.Boolean, nullable=False, default=True) #True OR False
     essential = db.Column(db.Integer, unique=False, nullable=False) #0 OR 1

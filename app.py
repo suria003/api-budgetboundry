@@ -52,6 +52,7 @@ def create_user():
     name = data.get('name')
     email = data.get('email')
     password = data.get('password')
+    address = data.get('address')
 
     # Check required fields
     if not all([name, email, password]):
@@ -73,7 +74,7 @@ def create_user():
     applicationDate = False
 
     # Create and store user
-    new_user = User(name=name, email=email, password=password, token=token, bill_token=bill_token, label_token=label_token, group=group,  user_verification=user_verification)
+    new_user = User(name=name, email=email, password=password, token=token, bill_token=bill_token, label_token=label_token, group=group,  user_verification=user_verification, address=address)
     new_otp = Otp_verify(token=token, email=email, passcode=passcode, validate=validate, otp_flag=otp_flag)
     new_permission = Permission(token=token, label=0, applicationDate=applicationDate)
     
