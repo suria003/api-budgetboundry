@@ -1,4 +1,4 @@
-from sqlalchemy import CheckConstraint # type: ignore
+from sqlalchemy import CheckConstraint, LargeBinary # type: ignore
 from database import db
 from datetime import datetime, date
 
@@ -7,6 +7,11 @@ class User(db.Model):
     name = db.Column(db.String(100), nullable=False) # User Name
     email = db.Column(db.String(100), unique=True, nullable=False) # User Email
     password = db.Column(db.String(64), nullable=False) # User Password
+    
+    profile = db.Column(LargeBinary(length=2 * 1024 * 1024), nullable=True)  # Profile picture (max 2MB)
+    profile_mimetype = db.Column(db.String(50), nullable=True)  # e.g., 'image/png', 'image/jpeg'
+    profile_filename = db.Column(db.String(255), nullable=True)  # Optional: original filename
+    
     token = db.Column(db.String(20), unique=True, nullable=False) # User Token
     bill_token = db.Column(db.String(10), unique=True, nullable=False) # User Bill Id
     label_token = db.Column(db.String(10), unique=True, nullable=False) # User Bill Id

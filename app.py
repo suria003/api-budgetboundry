@@ -223,6 +223,54 @@ def login_user():
             'name': user.name
         }
     }), 200
+    
+@app.route('/api/profile_edit', methods=['POST'])
+def Profile_edit():
+    data = request.get_json()
+    
+    token = data.get('token')
+    
+    name = data.get('name')
+    email = data.get('email')
+    password = data.get('password')
+    
+    profile = request.files.get('profileImage')
+    
+    if not all([name, email, password, profile]):
+        return jsonify({
+            'warn' : 'All field required'
+        }), 400
+    
+    if len(profile.read()) > 2*1024*1024:
+        return jsonify({
+            'warn' : 'File size lesser than 2 MB.'
+        }), 413
+        
+    chk_user = User.query.filter_by(token=token, email=email).first()
+    
+    if not chk_user:
+        return jsonify({
+            'warn': f'User {email} Not Found.'
+        }), 404
+        
+    chk_user.name = name
+    chk_user.password = password
+    
+    profile.seek(0)
+    chk_user.profile = profile.read()
+    chk_user.profile_mimetype = profile.mimetype
+    chk_user.profile_filename = profile.filename
+    
+    try:
+        db.session.commit()
+        return jsonify({
+            'message':'Profile Updated Successfully.'
+        }), 200
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({
+            'error' : 'Internal Server Error'
+        }), 500
 
 @app.route('/api/get_session', methods=['GET'])
 def get_session():
@@ -230,8 +278,11 @@ def get_session():
     
     data = [
         {
+            'name' : session.name,
+            'password' : session.password,
             'email' : session.email,
             'token' : session.token,
+            'profileUrl' : session.profile,
             'group' : session.group,
             'address' : session.address,
         }
